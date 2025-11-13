@@ -67,3 +67,7 @@ export default tseslint.config([
   },
 ])
 ```
+
+
+https://v0.app/
+https://lovable.dev/
