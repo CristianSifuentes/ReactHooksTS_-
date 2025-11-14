@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import { Plus, Trash2, Check } from 'lucide-react';
 
@@ -20,8 +20,15 @@ export const TasksAppReducer = () => {
   const [state, dispatch] = useReducer(tasksReducer, getTasksInitialState());
   const [inputValue, setInputValue] = useState('');
   //  const { todos, completed: completedCount, length: totalCount } = state;
+  
 
+  // useEffect(() => { 
+  //   console.log('Estado actualizado:', state);
+  // }, [state]);
 
+    useEffect(() => {
+    localStorage.setItem('tasks-state', JSON.stringify(state));
+  }, [state]);
 
   const addTodo = () => {
     console.log('Agregar tarea', inputValue);
