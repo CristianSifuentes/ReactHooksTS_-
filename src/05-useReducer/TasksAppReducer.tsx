@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 
 import { Plus, Trash2, Check } from 'lucide-react';
 
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getTasksInitialState, tasksReducer } from './reducer/tasksReducer';
 
 interface Todo {
   id: number;
@@ -14,31 +15,39 @@ interface Todo {
 }
 
 export const TasksAppReducer = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  // const [todos, setTodos] = useState<Todo[]>([]);
+  // const [state, dispatch] = useReducer(/* reducer */, /* initialState */);
+  const [state, dispatch] = useReducer(tasksReducer, getTasksInitialState());
   const [inputValue, setInputValue] = useState('');
+  //  const { todos, completed: completedCount, length: totalCount } = state;
+
+
 
   const addTodo = () => {
     console.log('Agregar tarea', inputValue);
-
+    dispatch({ type: 'ADD_TODO', payload: inputValue });
+    setInputValue('');
   };
 
   const toggleTodo = (id: number) => {
     console.log('Cambiar de true a false', id);
-
+    dispatch({ type: 'TOGGLE_TODO', payload: id });
   };
 
   const deleteTodo = (id: number) => {
     console.log('Eliminar tarea', id);
-
+    dispatch({ type: 'DELETE_TODO', payload: id });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     console.log('Presiono enter');
-
+    if (e.key === 'Enter') {
+      addTodo();
+    }
   };
 
-  const completedCount = todos.filter((todo) => todo.completed).length;
-  const totalCount = todos.length;
+  const completedCount = state.todos.filter((todo) => todo.completed).length;
+  const totalCount = state.todos.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -103,7 +112,7 @@ export const TasksAppReducer = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {todos.length === 0 ? (
+            {state.todos.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
                   <Check className="w-8 h-8 text-slate-400" />
@@ -115,7 +124,7 @@ export const TasksAppReducer = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                {todos.map((todo) => (
+                {state.todos.map((todo) => (
                   <div
                     key={todo.id}
                     className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 ${
