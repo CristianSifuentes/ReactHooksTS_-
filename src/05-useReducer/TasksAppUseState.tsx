@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Plus, Trash2, Check } from 'lucide-react';
+import { Plus, Trash2, Check, Key } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,27 +13,46 @@ interface Todo {
   completed: boolean;
 }
 
-export const TasksApp = () => {
+export const TasksAppUseState = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [inputValue, setInputValue] = useState('');
 
   const addTodo = () => {
-    console.log('Agregar tarea', inputValue);
+    // console.log('Agregar tarea', inputValue);
+    if (inputValue.trim() === '') return;
 
+    const newTodo: Todo = {
+      id: Date.now(),
+      text: inputValue.trim(),
+      completed: false,
+    };
+
+    setTodos((prev) => [...prev, newTodo]);
+    setInputValue('');
   };
 
   const toggleTodo = (id: number) => {
     console.log('Cambiar de true a false', id);
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
 
   };
 
   const deleteTodo = (id: number) => {
     console.log('Eliminar tarea', id);
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    console.log('Tareas restantes', todos);
 
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    console.log('Presiono enter');
+    console.log(`Key: ${e.key}`);
+    if (e.key === 'Enter') {
+      addTodo();
+    }
 
   };
 
@@ -45,10 +64,10 @@ export const TasksApp = () => {
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-slate-800 mb-2">
-            Lista de Tareas
+            Task List
           </h1>
           <p className="text-slate-600">
-            Mantén tus tareas organizadas y consigue hacerlas
+            Keep your tasks organized and get them done
           </p>
         </div>
 
@@ -56,7 +75,7 @@ export const TasksApp = () => {
           <CardContent className="p-6">
             <div className="flex gap-2">
               <Input
-                placeholder="Añade una nueva tarea..."
+                placeholder="Add a new task..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyPress}
@@ -76,13 +95,13 @@ export const TasksApp = () => {
           <Card className="mb-6 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-semibold text-slate-700">
-                Progreso
+                Progress
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="flex items-center justify-between text-sm text-slate-600 mb-2">
                 <span>
-                  {completedCount} de {totalCount} completadas
+                  {completedCount} of {totalCount} completed
                 </span>
                 <span>{Math.round((completedCount / totalCount) * 100)}%</span>
               </div>
@@ -99,7 +118,7 @@ export const TasksApp = () => {
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-slate-700">
-              Tareas
+              Tasks
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -108,9 +127,9 @@ export const TasksApp = () => {
                 <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
                   <Check className="w-8 h-8 text-slate-400" />
                 </div>
-                <p className="text-slate-500 text-lg mb-2">No hay tareas</p>
+                <p className="text-slate-500 text-lg mb-2">There are no tasks</p>
                 <p className="text-slate-400 text-sm">
-                  Añade una tarea arriba para empezar
+                    Add a task above to get started.
                 </p>
               </div>
             ) : (
