@@ -1,134 +1,75 @@
-// ! Important:
-// Is necessary to have Shadcn/ui
-// https://ui.shadcn.com/docs/installation/vite
-
-import React, { useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { SkipForward, Play } from 'lucide-react';
-import { se } from 'date-fns/locale';
 import confetti from 'canvas-confetti';
+import {
+  getInitialState,
+  scrambleWordsReducer,
+} from './reducer/scrambleWordReducer';
 
-const GAME_WORDS = [
-  'REACT',
-  'JAVASCRIPT',
-  'TYPESCRIPT',
-  'HTML',
-  'ANGULAR',
-  'SOLID',
-  'NODE',
-  'VUEJS',
-  'SVELTE',
-  'EXPRESS',
-  'MONGODB',
-  'POSTGRES',
-  'DOCKER',
-  'KUBERNETES',
-  'WEBPACK',
-  'VITE',
-  'TAILWIND',
-];
+export const ScrambleWordsUseReducer = () => {
+  const [state, dispatch] = useReducer(scrambleWordsReducer, getInitialState());
 
-// This function shuffles the array to ensure it is always random
-const shuffleArray = (array: string[]) => {
-  return array.sort(() => Math.random() - 0.5);
-};
+  const {
+    words,
+    currentWord,
+    errorCounter,
+    guess,
+    isGameOver,
+    maxAllowErrors,
+    maxSkips,
+    points,
+    scrambledWord,
+    skipCounter,
+    totalWords,
+  } = state;
 
-// This function shuffles the letters of the word
-const scrambleWord = (word: string = '') => {
-  return word
-    .split('')
-    .sort(() => Math.random() - 0.5)
-    .join('');
-};
+  useEffect(() => {
+    if (points === 0) return;
 
-export const ScrambleWords = () => {
-  const [words, setWords] = useState(shuffleArray(GAME_WORDS));
-
-  const [currentWord, setCurrentWord] = useState(words[0]);
-  const [scrambledWord, setScrambledWord] = useState(scrambleWord(currentWord));
-  const [guess, setGuess] = useState('');
-  const [points, setPoints] = useState(0);
-  const [errorCounter, setErrorCounter] = useState(0);
-  const [maxAllowErrors, setMaxAllowErrors] = useState(3);
-
-  const [skipCounter, setSkipCounter] = useState(0);
-  const [maxSkips, setMaxSkips] = useState(3);
-
-  const [isGameOver, setIsGameOver] = useState(false);
-
-  const handleGuessSubmit = (e: React.FormEvent) => {
-    // Prevents the page from refreshing
-
-
-    e.preventDefault();
-        confetti({
+    confetti({
       particleCount: 100,
       spread: 120,
       origin: { y: 0.6 },
     });
-    if (guess === currentWord) {
-      console.log('Correct guess');
-      setPoints((prev) => prev + 1);
-      setGuess('');
+  }, [points]);
 
-      const nextWords = words.slice(1);
-      setWords(nextWords);
-      setCurrentWord(nextWords[0]);
-      setScrambledWord(scrambleWord(nextWords[0]));
-      return;
-    }
-    // Implement game logic
-    console.log('Guess attempt:', guess, currentWord);
-    setErrorCounter((prev) => prev + 1);
-    setGuess('');
+  const handleGuessSubmit = (e: React.FormEvent) => {
+   // Prevents page refresh
+    e.preventDefault();
 
-    if (errorCounter + 1 >= maxAllowErrors) {
-      setIsGameOver(true);
-    }
-
+    dispatch({
+      type: 'CHECK_ANSWER',
+    });
   };
 
   const handleSkip = () => {
-    console.log('Word skipped');
-    if (skipCounter + 1 >= maxSkips) return;
-
-    setSkipCounter((prev) => prev + 1);
-    const nextWords = words.slice(1);
-    setWords(nextWords);
-    setCurrentWord(nextWords[0]);
-    setScrambledWord(scrambleWord(nextWords[0]));
-    setGuess('');
-    setErrorCounter(0);
-    setIsGameOver(false);
-
-    
+    dispatch({ type: 'SKIP_WORD' });
   };
 
   const handlePlayAgain = () => {
-    console.log('Play again');
-    setWords(shuffleArray(GAME_WORDS));
-    setCurrentWord(words[0]);
-    setScrambledWord(scrambleWord(words[0]));
-    setGuess('');
-    setPoints(0);
-    setErrorCounter(0);
-    setSkipCounter(0);
-    setIsGameOver(false);
+    dispatch({ type: 'START_NEW_GAME', payload: getInitialState() });
   };
 
-  //! If there are no more words to play, show the game over message
+  //! if no words left to play, show game over message
   if (words.length === 0) {
-    
+    confetti({
+      particleCount: 100,
+      spread: 120,
+      origin: { y: 0.6 },
+    });
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <div className="w-full max-w-md mx-auto">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+            jumbled words
 
-jumbled words
+
           </h1>
-          <p className="text-gray-600">No words to play</p>
+          <p className="text-gray-600">No words left to play</p>
           <br />
           <div>Score: {points}</div>
           <br />
@@ -136,7 +77,7 @@ jumbled words
           <br />
           <div>Skips: {skipCounter}</div>
           <br />
-          <Button onClick={handlePlayAgain}>Jugar de nuevo</Button>
+          <Button onClick={handlePlayAgain}>Play Again  </Button>
         </div>
       </div>
     );
@@ -148,7 +89,7 @@ jumbled words
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-            Scrambled Words
+            Jumbled Words
           </h1>
           <p className="text-gray-600">
             Unscramble the letters to find the word!
@@ -161,7 +102,7 @@ jumbled words
             {/* Scrambled Word Display */}
             <div className="mb-8">
               <h2 className="text-center text-sm font-medium text-gray-500 mb-4 uppercase tracking-wide flex items-center justify-center gap-2">
-                Messy Word
+                Jumbled Word
                 {isGameOver && (
                   <span className="text-red-500 text-xl"> {currentWord}</span>
                 )}
@@ -197,9 +138,12 @@ jumbled words
                     id="guess"
                     type="text"
                     value={guess}
-                    onChange={(e) =>
-                      setGuess(e.target.value.toUpperCase().trim())
-                    }
+                    onChange={(e) => {
+                      dispatch({
+                        type: 'SET_GUESS',
+                        payload: e.target.value,
+                      });
+                    }}
                     placeholder="Enter your word..."
                     className="text-center text-lg font-semibold h-12 border-2 border-indigo-200 focus:border-indigo-500 transition-colors"
                     maxLength={scrambledWord.length}
@@ -220,7 +164,7 @@ jumbled words
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 text-center border border-green-200">
                 <div className="text-2xl font-bold text-green-600">
-                  {points} / {GAME_WORDS.length}
+                  {points} / {totalWords}
                 </div>
                 <div className="text-sm text-green-700 font-medium">Points</div>
               </div>
@@ -241,7 +185,7 @@ jumbled words
                 disabled={isGameOver || skipCounter >= maxSkips}
               >
                 <SkipForward className="w-4 h-4" />
-                Skip ({skipCounter} / {maxSkips})
+                Saltar ({skipCounter} / {maxSkips})
               </Button>
               <Button
                 onClick={handlePlayAgain}
@@ -258,7 +202,7 @@ jumbled words
         {/* Footer */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
-            Challenge yourself with scrambled words!
+            Desafíate con palabras desordenadas!
             <br />
             <br />
             {words.join(', ')}

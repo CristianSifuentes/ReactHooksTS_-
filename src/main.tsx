@@ -7,7 +7,7 @@ import './index.css'
 // import { FocusScreen } from './04-useRef/FocusScreen'
 // import { TasksAppUseState } from './05-useReducer/TasksAppUseState'
 // import { TasksAppReducer } from './05-useReducer/TasksAppReducer'
-import { ScrambleWords } from './05-useReducer/ScrambleWords'
+import { ScrambleWordsUseState } from './05-useReducer/ScrambleWordsUseState'
 // import { PokemonPage } from './03-examples/PokemonPage'
 // import { HooksApp } from './HooksApp'
 // import { TrafficLight } from './01-useState/TrafficLight'
@@ -24,7 +24,9 @@ createRoot(document.getElementById('root')!).render(
     {/* <FocusScreen></FocusScreen> */}
     {/* <TasksAppUseState></TasksAppUseState> */}
     {/* <TasksAppReducer /> */}
-    <ScrambleWords />
+    {/* <ScrambleWordsUseState /> */}
+    <ScrambleWordsUseState />
+    {/* <ScrambleWordsUseReducer /> */}
     
   </StrictMode>,
 )
