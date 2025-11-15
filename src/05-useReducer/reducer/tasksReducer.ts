@@ -10,7 +10,10 @@
 
 
 import { z } from 'zod';
-
+// zod is a typescript-first schema declaration and validation library
+// it allows you to define a schema for your data and validate it at runtime
+// you can use it to ensure that your data conforms to the expected shape
+// and types
 interface Todo {
   id: number;
   text: string;

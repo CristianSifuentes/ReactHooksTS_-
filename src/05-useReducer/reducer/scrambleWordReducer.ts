@@ -1,0 +1,134 @@
+
+export interface ScrambleWordsState {
+  currentWord: string;
+  errorCounter: number;
+  guess: string;
+  isGameOver: boolean;
+  maxAllowErrors: number;
+  maxSkips: number;
+  points: number;
+  scrambledWord: string;
+  skipCounter: number;
+  words: string[];
+  totalWords: number;
+}
+
+const GAME_WORDS = [
+  'REACT',
+  'JAVASCRIPT',
+  'TYPESCRIPT',
+  'HTML',
+  'ANGULAR',
+  'SOLID',
+  'NODE',
+  'VUEJS',
+  'SVELTE',
+  'EXPRESS',
+  'MONGODB',
+  'POSTGRES',
+  'DOCKER',
+  'KUBERNETES',
+  'WEBPACK',
+  'VITE',
+  'TAILWIND',
+];
+
+// This function shuffles the array to ensure it is always random
+const shuffleArray = (array: string[]) => {
+  return array.sort(() => Math.random() - 0.5);
+};
+
+// This function scrambles the letters of the word
+const scrambleWord = (word: string = '') => {
+  return word
+    .split('')
+    .sort(() => Math.random() - 0.5)
+    .join('');
+};
+
+export const getInitialState = (): ScrambleWordsState => {
+  const shuffledWords = shuffleArray([...GAME_WORDS]);
+  return {
+    currentWord: shuffledWords[0],
+    errorCounter: 0,
+    guess: '',
+    isGameOver: false,
+    maxAllowErrors: 3,
+    maxSkips: 3,
+    points: 0,
+    scrambledWord: scrambleWord(shuffledWords[0]),
+    skipCounter: 0,
+    words: shuffledWords,
+    totalWords: shuffledWords.length,
+  };
+};
+
+
+export type ScrambleWordsAction =
+  | { type: 'SET_GUESS'; payload: string }
+  | { type: 'CHECK_ANSWER' }
+  | { type: 'START_NEW_GAME'; payload: ScrambleWordsState }   
+  | { type: 'SKIP_WORD' }
+
+    | { type: 'SET_POINTS'; payload: number }
+    | { type: 'SET_ERROR_COUNTER'; payload: number }
+    | { type: 'SET_SKIP_COUNTER'; payload: number }
+    | { type: 'SET_IS_GAME_OVER'; payload: boolean }
+    | { type: 'SET_CURRENT_WORD'; payload: string }
+    | { type: 'SET_SCRAMBLED_WORD'; payload: string }
+    | { type: 'SET_WORDS'; payload: string[] }
+
+
+;
+
+export const scrambleWordsReducer = (
+    state: ScrambleWordsState,
+    action: ScrambleWordsAction
+): ScrambleWordsState => {      
+    switch (action.type) {
+        case 'SET_WORDS':
+            return {    
+                ...state,
+                words: action.payload,
+            };  
+        case 'SET_CURRENT_WORD':
+            return {
+                ...state,       
+
+
+                currentWord: action.payload,
+            };
+        case 'SET_SCRAMBLED_WORD':  
+            return {
+                ...state,
+                scrambledWord: action.payload,              
+            };      
+        case 'SET_GUESS':
+            return {
+                ...state,           
+                guess: action.payload,  
+            };              
+        case 'SET_POINTS':          
+            return {        
+                ...state,           
+                points: action.payload,         
+            };      
+        case 'SET_ERROR_COUNTER':        
+            return {                
+                ...state,           
+                errorCounter: action.payload,           
+            };      
+        case 'SET_SKIP_COUNTER':        
+            return {        
+                ...state,           
+                skipCounter: action.payload,         
+            };          
+        case 'SET_IS_GAME_OVER':                            
+            return {        
+                ...state,           
+                isGameOver: action.payload,         
+            };              
+        default:          
+            return state;      
+    }           
+};  
