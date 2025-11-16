@@ -13,8 +13,9 @@ import './index.css'
 // import { MemoHook } from './06-memos/MemoHook'
 // import { MemoCounter } from './06-memos/MemoCounter'
 // import { InstagromApp } from './07-useOptimistic/InstagromApp'
-import { ClientInformation } from './08-use-suspense/ClientInformation'
-import { getUserAction } from './08-use-suspense/api/get-user.action'
+// import { ClientInformation } from './08-use-suspense/ClientInformation'
+// import { getUserAction } from './08-use-suspense/api/get-user.action'
+import { ProfessionalApp } from './09-useContext/ProfessionalApp'
 // import { PokemonPage } from './03-examples/PokemonPage'
 // import { HooksApp } from './HooksApp'
 // import { TrafficLight } from './01-useState/TrafficLight'
@@ -40,7 +41,7 @@ createRoot(document.getElementById('root')!).render(
 
 
 
-    <Suspense
+    {/* <Suspense
       fallback={
         <div className="bg-gradient flex flex-col">
           <h1 className="text-2xl">Loading...</h1>
@@ -48,6 +49,8 @@ createRoot(document.getElementById('root')!).render(
       }
     >
       <ClientInformation getUser={getUserAction(1001)} />
-    </Suspense>
+    </Suspense> */}
+
+    <ProfessionalApp />
   </StrictMode>,
 )
